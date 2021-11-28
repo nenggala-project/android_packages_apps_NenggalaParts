@@ -22,10 +22,13 @@ import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
 import android.graphics.ColorMatrixColorFilter;
+import android.graphics.PixelFormat;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -39,6 +42,7 @@ import android.view.MotionEvent.PointerCoords;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.widget.FrameLayout;
+import android.annotation.Nullable;
 
 import org.lineageos.lineageparts.R;
 
@@ -52,10 +56,10 @@ public class PlatLogoActivity extends Activity {
 
     // Color matrix to force the logo to be white regardless of input color.
     private static final float[] WHITE = {
-        1,     1,     1,    0,    255, // red
-        1,     1,     1,    0,    255, // green
-        1,     1,     1,    0,    255, // blue
-        0,     0,     0,    1,      0  // alpha
+            1,     1,     1,    0,    255, // red
+            1,     1,     1,    0,    255, // green
+            1,     1,     1,    0,    255, // blue
+            0,     0,     0,    1,      0  // alpha
     };
     private static final int BASE_SCALE = 50; // magic number scale multiple. Looks good on all DPI
     private static final long LONG_PRESS_TIMEOUT= new Long(ViewConfiguration.getLongPressTimeout());
@@ -105,7 +109,7 @@ public class PlatLogoActivity extends Activity {
          */
         public float lum(int rgb) {
             return ((Color.red(rgb) * 299f) + (Color.green(rgb) * 587f)
-                  + (Color.blue(rgb) * 114f)) / 1000f;
+                    + (Color.blue(rgb) * 114f)) / 1000f;
         }
 
         /**
@@ -131,7 +135,7 @@ public class PlatLogoActivity extends Activity {
             Log.v("PlatLogoActivity", "color palette: " + str);
         }
 
-        
+
         @Override
         public void draw(Canvas canvas) {
             if (mDP == 0) mDP = getResources().getDisplayMetrics().density;
@@ -149,13 +153,13 @@ public class PlatLogoActivity extends Activity {
             paint.setStyle(Paint.Style.FILL);
 
 
-            canvas.drawBitmap(getBitmapFromDrawable(context.getResources().getDrawablee(R.drawable.megamendung), height), width, height, paint);
+            canvas.drawBitmap(getBitmapFromDrawable(getResources().getDrawable(R.drawable.megamendung), height), width, height, paint);
 
             // Draw LineageOS Logo drawable
             canvas.save();
             {
                 canvas.translate((-360 / 2) * mRadius / BASE_SCALE,
-                                (-180 / 2) * mRadius / BASE_SCALE);
+                        (-180 / 2) * mRadius / BASE_SCALE);
                 canvas.scale(mRadius / BASE_SCALE, mRadius / BASE_SCALE);
                 mLogo.draw(canvas);
             }
@@ -178,7 +182,7 @@ public class PlatLogoActivity extends Activity {
 
         @Override
         public int getOpacity() {
-            return 0;
+            return PixelFormat.UNKNOWN;
         }
     }
 
@@ -264,13 +268,13 @@ public class PlatLogoActivity extends Activity {
 
         mAnim = new TimeAnimator();
         mAnim.setTimeListener(
-            new TimeAnimator.TimeListener() {
-                @Override
-                public void onTimeUpdate(TimeAnimator animation, long totalTime, long deltaTime) {
-                    mBG.setOffset((float) totalTime / 60000f);
-                    mBG.invalidateSelf();
-                }
-            });
+                new TimeAnimator.TimeListener() {
+                    @Override
+                    public void onTimeUpdate(TimeAnimator animation, long totalTime, long deltaTime) {
+                        mBG.setOffset((float) totalTime / 60000f);
+                        mBG.invalidateSelf();
+                    }
+                });
 
         mAnim.start();
     }
@@ -283,41 +287,40 @@ public class PlatLogoActivity extends Activity {
         }
         super.onStop();
     }
-
+    private static final int DEFAULT_DRAWABLE_SIZE = -1;
     public static Bitmap getBitmapFromDrawable(@Nullable Drawable drawable, int expectSize) {
         Bitmap bitmap;
-    
         if (drawable == null) {
             return null;
         }
-    
+
         if (drawable instanceof BitmapDrawable) {
             BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
             if (bitmapDrawable.getBitmap() != null) {
                 return bitmapDrawable.getBitmap();
             }
         }
-    
+
         if (drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
             bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888); // Single color bitmap will be created of 1x1 pixel
         } else {
             float ratio = (expectSize != DEFAULT_DRAWABLE_SIZE)
                     ? calculateRatio(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), expectSize)
                     : 1f;
-    
+
             int width = (int) (drawable.getIntrinsicWidth() * ratio);
             int height = (int) (drawable.getIntrinsicHeight() * ratio);
-    
+
             bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         }
-    
+
         Canvas canvas = new Canvas(bitmap);
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         drawable.draw(canvas);
-    
+
         return bitmap;
     }
-    
+
     public static float calculateRatio(int height, int width, int expected) {
         if (height == 0 && width == 0) {
             return 1f;
