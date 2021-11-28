@@ -131,77 +131,25 @@ public class PlatLogoActivity extends Activity {
             Log.v("PlatLogoActivity", "color palette: " + str);
         }
 
+        
         @Override
         public void draw(Canvas canvas) {
             if (mDP == 0) mDP = getResources().getDisplayMetrics().density;
             final float width = canvas.getWidth();
             final float height = canvas.getHeight();
+            final float inner_w = mRadius * 0.667f;
             if (mRadius == 0) {
                 setPosition(width / 2, height / 2);
                 setRadius(width / 7);
             }
-            final float inner_w = mRadius * 0.667f;
-
             final Paint paint = new Paint();
-            paint.setStrokeCap(Paint.Cap.BUTT);
             canvas.translate(mX, mY);
 
             float w = Math.max(canvas.getWidth(), canvas.getHeight())  * 1.414f;
             paint.setStyle(Paint.Style.FILL);
 
-            // Draw all the circles
-            int i=0;
-            while (w > mRadius * 1.55 + inner_w * 1.55) {
-                paint.setColor(0xFF000000 | mPalette[i % mPalette.length]);
-                // for a slower but more complete version:
-                // paint.setStrokeWidth(w);
-                // canvas.drawPath(p, paint);
-                canvas.drawOval(-w / 2, -w / 2, w / 2, w / 2, paint);
-                w -= inner_w * (1.1f + Math.sin((i / 20f + mOffset) * 3.14159f));
-                i++;
-            }
 
-            // the innermost circle needs to be a constant color to avoid rapid flashing
-            paint.setColor(0xFF000000 | mPalette[(mDarkest + 1) % mPalette.length]);
-            canvas.drawOval(-mRadius, -mRadius, mRadius, mRadius, paint);
-
-            /* Draw the logo outline
-             * Sort of hacky. The Lineage logo can be built with a bunch of circles.
-             * This draws circles we need and clips off unnecessary parts.
-             */
-            paint.setColor(mPalette[mDarkest]);
-            // Draw the logo "arms"
-            canvas.save();
-            {
-                paint.setStyle(Paint.Style.STROKE);
-                paint.setStrokeWidth(inner_w * 0.82f);
-                // clip only what we want to see
-                canvas.clipRect(-100 * mRadius / BASE_SCALE, -20 * mRadius / BASE_SCALE,
-                                100 * mRadius / BASE_SCALE, 30 * mRadius / BASE_SCALE);
-                canvas.translate(0, 239 * mRadius / BASE_SCALE);
-                canvas.drawCircle(0, 0, mRadius * 4.8f, paint);
-            }
-            canvas.restore();
-
-            // center circle outline
-            paint.setStyle(Paint.Style.FILL);
-            canvas.drawCircle(0, 0, mRadius * 1.3f, paint);
-
-            // left circle outline
-            canvas.save();
-            {
-                canvas.translate(-112.5f * mRadius / BASE_SCALE, 28 * mRadius / BASE_SCALE);
-                canvas.drawCircle(0, 0, mRadius * 0.74f, paint);
-            }
-            canvas.restore();
-
-            // right circle outline
-            canvas.save();
-            {
-                canvas.translate(112.5f * mRadius / BASE_SCALE, 28 * mRadius / BASE_SCALE);
-                canvas.drawCircle(0, 0, mRadius * 0.74f, paint);
-            }
-            canvas.restore();
+            canvas.drawBitmap(getBitmapFromDrawable(context.getResources().getDrawablee(R.drawable.megamendung), height), width, height, paint);
 
             // Draw LineageOS Logo drawable
             canvas.save();
@@ -334,5 +282,48 @@ public class PlatLogoActivity extends Activity {
             mAnim = null;
         }
         super.onStop();
+    }
+
+    public static Bitmap getBitmapFromDrawable(@Nullable Drawable drawable, int expectSize) {
+        Bitmap bitmap;
+    
+        if (drawable == null) {
+            return null;
+        }
+    
+        if (drawable instanceof BitmapDrawable) {
+            BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
+            if (bitmapDrawable.getBitmap() != null) {
+                return bitmapDrawable.getBitmap();
+            }
+        }
+    
+        if (drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
+            bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888); // Single color bitmap will be created of 1x1 pixel
+        } else {
+            float ratio = (expectSize != DEFAULT_DRAWABLE_SIZE)
+                    ? calculateRatio(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), expectSize)
+                    : 1f;
+    
+            int width = (int) (drawable.getIntrinsicWidth() * ratio);
+            int height = (int) (drawable.getIntrinsicHeight() * ratio);
+    
+            bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        }
+    
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+    
+        return bitmap;
+    }
+    
+    public static float calculateRatio(int height, int width, int expected) {
+        if (height == 0 && width == 0) {
+            return 1f;
+        }
+        return (height > width)
+                ? expected / (float) width
+                : expected / (float) height;
     }
 }
