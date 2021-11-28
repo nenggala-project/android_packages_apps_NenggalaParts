@@ -153,7 +153,7 @@ public class PlatLogoActivity extends Activity {
             paint.setStyle(Paint.Style.FILL);
 
 
-            canvas.drawBitmap(getBitmapFromDrawable(getResources().getDrawable(R.drawable.megamendung), height), width, height, paint);
+            canvas.drawBitmap(getBitmapFromDrawable(getResources().getDrawable(R.drawable.megamendung), Math.round(height)), width, height, paint);
 
             // Draw LineageOS Logo drawable
             canvas.save();
