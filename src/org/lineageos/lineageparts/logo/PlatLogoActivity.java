@@ -72,13 +72,14 @@ public class PlatLogoActivity extends Activity {
 
         // LineageOS logo drawable
         private Drawable mLogo;
-
+        private Drawable mBackground;
         public PBackground(Context context) {
             randomizePalette();
             // LineageOS logo
             mLogo = context.getResources().getDrawable(R.drawable.logo_lineage);
             mLogo.setColorFilter(new ColorMatrixColorFilter(WHITE)); // apply color filter
             mLogo.setBounds(0, 0, 360, 180); // Aspect ratio 2:1
+            mBackground = context.getResources().getDrawable(R.drawable.megamendung);
         }
 
         /**
@@ -153,7 +154,7 @@ public class PlatLogoActivity extends Activity {
             paint.setStyle(Paint.Style.FILL);
 
 
-            canvas.drawBitmap(getBitmapFromDrawable(getResources().getDrawable(R.drawable.megamendung), Math.round(height)), width, height, paint);
+            canvas.drawBitmap(getBitmapFromDrawable(mBackground, Math.round(height)), width, height, paint);
 
             // Draw LineageOS Logo drawable
             canvas.save();
