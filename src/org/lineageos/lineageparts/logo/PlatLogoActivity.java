@@ -72,7 +72,7 @@ public class PlatLogoActivity extends Activity {
         public PBackground(Context context) {
             randomizePalette();
             // LineageOS logo
-            mLogo = context.getResources().getDrawable(R.drawable.logo_lineage);
+            mLogo = context.getResources().getDrawable(R.drawable.background_nenggala);
             mLogo.setColorFilter(new ColorMatrixColorFilter(WHITE)); // apply color filter
             mLogo.setBounds(0, 0, 360, 180); // Aspect ratio 2:1
         }
@@ -268,10 +268,10 @@ public class PlatLogoActivity extends Activity {
         mLayout = new FrameLayout(this);
         setContentView(mLayout);
 
-        mBG = new PBackground(getApplicationContext());
-        mLayout.setBackground(mBG);
+        //mBG = new PBackground(getApplicationContext());
+        mLayout.setBackground(getApplicationContext().getResources().getDrawable(R.drawable.background_nenggala));
 
-        mLayout.setOnTouchListener(new View.OnTouchListener() {
+        /* mLayout.setOnTouchListener(new View.OnTouchListener() {
             final PointerCoords pc0 = new PointerCoords();
             final PointerCoords pc1 = new PointerCoords();
 
@@ -305,16 +305,16 @@ public class PlatLogoActivity extends Activity {
                 }
                 return true;
             }
-        });
+        }); */
     }
 
     @Override
     public void onStart() {
         super.onStart();
 
-        mBG.randomizePalette();
+        //mBG.randomizePalette();
 
-        mAnim = new TimeAnimator();
+       /*  mAnim = new TimeAnimator();
         mAnim.setTimeListener(
             new TimeAnimator.TimeListener() {
                 @Override
@@ -324,15 +324,15 @@ public class PlatLogoActivity extends Activity {
                 }
             });
 
-        mAnim.start();
+        mAnim.start(); */
     }
 
     @Override
     public void onStop() {
-        if (mAnim != null) {
+        /* if (mAnim != null) {
             mAnim.cancel();
             mAnim = null;
-        }
+        } */
         super.onStop();
     }
 }
