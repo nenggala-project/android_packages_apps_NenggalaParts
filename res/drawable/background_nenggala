@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:gravity="fill_vertical|fill_horizontal"
+        android:drawable="@drawable/megamendung"/>
+    <item android:gravity="center_horizontal|center_vertical"
+        android:drawable="@drawable/logo_lineage"/>
+</layer-list>

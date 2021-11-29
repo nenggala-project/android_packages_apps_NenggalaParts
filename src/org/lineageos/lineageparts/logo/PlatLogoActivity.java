@@ -42,7 +42,6 @@ import android.view.MotionEvent.PointerCoords;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.widget.FrameLayout;
-import android.annotation.Nullable;
 
 import org.lineageos.lineageparts.R;
 
@@ -74,12 +73,15 @@ public class PlatLogoActivity extends Activity {
         private Drawable mLogo;
         private Drawable mBackground;
         public PBackground(Context context) {
-            randomizePalette();
+            //randomizePalette();
             // LineageOS logo
-            mLogo = context.getResources().getDrawable(R.drawable.logo_lineage);
+            Log.v("PlatLogoActivity", "trying to load megamendung");
+            mLogo = context.getResources().getDrawable(R.drawable.background_nenggala);
             mLogo.setColorFilter(new ColorMatrixColorFilter(WHITE)); // apply color filter
             mLogo.setBounds(0, 0, 360, 180); // Aspect ratio 2:1
-            mBackground = context.getResources().getDrawable(R.drawable.megamendung);
+            Log.v("PlatLogoActivity", "megamendung loaded");
+            //mBackground = context.getResources().getDrawable(R.drawable.megamendung);
+            //Log.v("PlatLogoActivity", "megamendung loaded");
         }
 
         /**
@@ -153,10 +155,8 @@ public class PlatLogoActivity extends Activity {
             float w = Math.max(canvas.getWidth(), canvas.getHeight())  * 1.414f;
             paint.setStyle(Paint.Style.FILL);
 
-
-            canvas.drawBitmap(getBitmapFromDrawable(mBackground, Math.round(height)), width, height, paint);
-
             // Draw LineageOS Logo drawable
+            Log.v("PlatLogoActivity", "draw megamendung on canvas");
             canvas.save();
             {
                 canvas.translate((-360 / 2) * mRadius / BASE_SCALE,
@@ -287,47 +287,5 @@ public class PlatLogoActivity extends Activity {
             mAnim = null;
         }
         super.onStop();
-    }
-    private static final int DEFAULT_DRAWABLE_SIZE = -1;
-    public static Bitmap getBitmapFromDrawable(@Nullable Drawable drawable, int expectSize) {
-        Bitmap bitmap;
-        if (drawable == null) {
-            return null;
-        }
-
-        if (drawable instanceof BitmapDrawable) {
-            BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
-            if (bitmapDrawable.getBitmap() != null) {
-                return bitmapDrawable.getBitmap();
-            }
-        }
-
-        if (drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
-            bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888); // Single color bitmap will be created of 1x1 pixel
-        } else {
-            float ratio = (expectSize != DEFAULT_DRAWABLE_SIZE)
-                    ? calculateRatio(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), expectSize)
-                    : 1f;
-
-            int width = (int) (drawable.getIntrinsicWidth() * ratio);
-            int height = (int) (drawable.getIntrinsicHeight() * ratio);
-
-            bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        }
-
-        Canvas canvas = new Canvas(bitmap);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
-
-        return bitmap;
-    }
-
-    public static float calculateRatio(int height, int width, int expected) {
-        if (height == 0 && width == 0) {
-            return 1f;
-        }
-        return (height > width)
-                ? expected / (float) width
-                : expected / (float) height;
     }
 }
